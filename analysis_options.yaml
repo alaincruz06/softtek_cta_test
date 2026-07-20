@@ -1,0 +1,13 @@
+analyzer:
+  errors:
+    one_member_abstracts: ignore
+    strict_raw_type: ignore
+    unused_local_variable: ignore
+include: package:very_good_analysis/analysis_options.yaml
+
+linter:
+  rules:
+    # App UI surface: documenting every widget/public member is not enforced here.
+    public_member_api_docs: false
+    # Prefer readability over hard wraps in presentation-heavy code.
+    lines_longer_than_80_chars: false
