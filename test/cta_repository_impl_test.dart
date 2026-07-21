@@ -1,8 +1,9 @@
 import 'package:flags_test_starter/core/result.dart';
 import 'package:flags_test_starter/data/datasources/mock_sdk.dart';
+import 'package:flags_test_starter/data/models/cta_config_model.dart';
 import 'package:flags_test_starter/data/repositories/cta_repository_impl.dart';
-import 'package:flags_test_starter/domain/entities/cta_experiment_entity.dart';
 import 'package:flags_test_starter/domain/repositories/cta_repository.dart';
+import 'package:flags_test_starter/presentation/utils/functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,15 +16,21 @@ void main() {
   });
 
   test('Devuelve Result = OK', () async {
-    sdk.variant = CtaExperimentEntity.variantA;
+    sdk.useControl();
 
     final result = await repository.getHomeCta();
 
-    expect(result, isA<Ok<CtaExperimentEntity>>());
+    expect(result, isA<Ok<CtaConfig>>());
 
     result.fold(
       ok: (value) {
-        expect(value, CtaExperimentEntity.variantA);
+        expect(
+          value,
+          CtaConfig(
+            text: 'Ver más',
+            color: parseColor('FF9E9E9E'),
+          ),
+        );
       },
       err: (_) => fail('Expected Ok'),
     );

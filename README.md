@@ -22,15 +22,16 @@ Because no versions of very_good_analysis match >10.3.0 <11.0.0 and very_good_an
 <!--  -->
 - `lib/data/` — Capa de acceso a datos (SDK externo, mock, etc) + modelos
 - `lib/data/datasources/` — Llamadas a servicios externos (o SharedPrefs) - se puede separar en `datasources/local` y `datasources/remote`
+- `lib/data/datasources/models/` — Modelo que se lee del SDK externo (el objeto `cta_config_model` no varía, por eso no mapeo en domain)
 - `lib/data/repositories/` — Implementación de repositorios de la capa `domain`
 <!--  -->
 - `lib/domain/` — Capa de abstracción media entre SDK externos y la app
 - `lib/domain/repositories/` — Clases abstractas que permiten cambiar providers sin necesidad de modificar la lógica de negocio
-- `lib/domain/entities/` — Entidades (modelos) que manejan la lógica que se necesita mostrar/usar sin depender del sdk externo
 - `lib/domain/usecases/` — Clase intermedia entre la UI y los repositorios para no llamar directamente al repositorio desde los notifiers/providers
 <!--  -->
 - `lib/presentation/` — Capa de UI/UX padre (widgets, screens, theme, routing, etc)
 - `lib/presentation/providers/` — Providers/Notifiers de Riverpod para manejar los estados
+- `lib/presentation/utils/` — Clases útiles con métodos o clases para acceder en la capa `presentation`
 - `lib/presentation/widgets/` — Widgets reutilizables como componentes de diseño.
 
 ## Arquitectura/Diagrama
@@ -46,13 +47,13 @@ lib/
 │   ├── datasources/
 │   │     mock_sdk.dart     
 │   │
+│   ├── models/
+│   │     cta_config_model.dart    
+│   │  
 │   └── repositories/
 │         cta_repository_impl.dart
 │
 ├── domain/
-│   ├── entities/
-│   │     cta_experiment_entity.dart
-│   │
 │   ├── repositories/
 │   │     cta_repository.dart
 │   │
@@ -64,6 +65,9 @@ lib/
 │   │     notifiers.dart
 │   │     providers.dart
 │   │
+│   ├── utils/
+│   │     functions.dart
+│   │
 │   └── widgets/
 │         cta_button_widget.dart
 │
@@ -71,10 +75,10 @@ lib/
 
 ## Arquitectura/Definición
 
-Se decide esta arquitectura por su simplicidad y escalabilidad, en caso de modificar el SDK externo se modifica solamente la llamada en `lib/data/datasources/mock_sdk` y no debería cambiar la lógica de negocio en las clases internas (domain/presentation). 
- Se pudiera reemplazar por otra arquitectura de monorepo consumiendo de un paquete/librería dentro del mismo repo (u otro repo interno de la empresa) al que se haría la misma referencia como mock_sdk y se modificaría solo en el paquete externo la llamada al SDK.
+Se decide esta segunda arquitectura por su semejanza a la resolución de la tarea y similitud con posibles escenarios de variantes como Remote Config en Firebase, en caso de modificar el SDK externo se modifica solamente la llamada en `lib/data/datasources/mock_sdk` y no debería cambiar la lógica de negocio en las clases internas (domain/presentation). 
+ Se crean los métodos auxiliares en `mock_sdk.dart` para simular las llamadas a diferentes variables en el SDK sin necesidad de pasar por parámetros las variantes
 
-El comportamiento de los botones (texto y colores) están cableados en la capa de presentation de momento para sencillez pero se puede mapear desde un JSON o un Map retornado desde el SDK y se escribiría en una carpeta `lib/data/datasources/models` que lee directamente del SDK y este objeto se mapearía luego en `lib/domain/entities/`, se pasa la info al `lib/domain/usecases/` y de ahí se modifican los botones.
+El comportamiento de los botones (texto y colores) están cableados en la capa de presentation mapeando desde el Map retornado en el SDK (que se lee en `lib/data/datasources/models/cta_config_model.dart`) y no se decide mapear este objeto (en la capa `domain`) por su simplicidad y poco cambio, se pasa la info al `lib/domain/usecases/` y de ahí se modifican los botones.
 
 
 ## Tests

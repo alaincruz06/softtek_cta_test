@@ -1,5 +1,4 @@
 import 'package:flags_test_starter/core/value_state.dart';
-import 'package:flags_test_starter/domain/entities/cta_experiment_entity.dart';
 import 'package:flags_test_starter/presentation/providers/notifiers.dart';
 import 'package:flags_test_starter/presentation/widgets/cta_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -50,9 +49,13 @@ class HomeScreen extends ConsumerWidget {
                     child: CircularProgressIndicator(),
                   ),
                 ),
-              Success(:final value) => buildButton(value),
-              Failure() => buildButton(
-                  CtaExperimentEntity.control,
+              Success(:final value) => CtaButtonWidget(
+                  text: value.text,
+                  color: value.color,
+                ),
+              Failure() => const CtaButtonWidget(
+                  text: 'Ver más',
+                  color: Colors.grey,
                 ),
               Idle() => const SizedBox(),
             },
@@ -67,60 +70,24 @@ class HomeScreen extends ConsumerWidget {
               child: const Text('Cargando...'),
             ),
             ElevatedButton(
-              onPressed: () {
-                notifier.setSuccess(
-                  CtaExperimentEntity.control,
-                );
-              },
+              onPressed: notifier.useControl,
               child: const Text('Control'),
             ),
             ElevatedButton(
-              onPressed: () {
-                notifier.setSuccess(
-                  CtaExperimentEntity.variantA,
-                );
-              },
+              onPressed: notifier.useVariantA,
               child: const Text('Variant A'),
             ),
             ElevatedButton(
-              onPressed: () {
-                notifier.setSuccess(
-                  CtaExperimentEntity.variantB,
-                );
-              },
+              onPressed: notifier.useVariantB,
               child: const Text('Variant B'),
             ),
             ElevatedButton(
-              onPressed: () {
-                notifier.setError('Error de prueba');
-              },
+              onPressed: notifier.simulateError,
               child: const Text('Error'),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-Widget buildButton(CtaExperimentEntity variant) {
-  switch (variant) {
-    case CtaExperimentEntity.control:
-      return const CtaButtonWidget(
-        text: 'Ver más',
-        color: Colors.grey,
-      );
-
-    case CtaExperimentEntity.variantA:
-      return const CtaButtonWidget(
-        text: 'Pruébalo gratis',
-        color: Colors.blue,
-      );
-
-    case CtaExperimentEntity.variantB:
-      return const CtaButtonWidget(
-        text: 'Empieza ahora',
-        color: Colors.green,
-      );
   }
 }
